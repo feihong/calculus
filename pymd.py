@@ -4,6 +4,7 @@ Given a normal Python script, generate another Python script that outputs markdo
 import re
 from dataclasses import dataclass
 from pathlib import Path
+import textwrap
 
 def get_lines(input_file: Path):
   with input_file.open() as fp:
@@ -31,7 +32,6 @@ class Markdown:
 @dataclass
 class Code:
   content: str
-  produces_html: bool
 
 def tokenize(lines):
   for line in lines:
@@ -66,12 +66,19 @@ def tokenize_code_or_header(line, lines):
     return Header.from_line(accumulator[0])
   else:
     content = '\n'.join(accumulator)
-    produces_html = content.endswith('.show()')
-    return Code(content, produces_html)
+    return Code(content)
+
+PYTHON_BOILERPLATE = """\
+import htmlprint
+htmlprint.init(__file__)
+
+"""
 
 def get_code_chunks(tokens):
   def printable(s):
     return s.replace('\n', '\\n')
+
+  yield PYTHON_BOILERPLATE
 
   for token in tokens:
     match token:
@@ -80,15 +87,12 @@ def get_code_chunks(tokens):
         yield f'print("{prefix} {content}\\n")'
       case Markdown(content):
         yield f'print("{printable(content)}\\n")'
-      case Code(content, produces_html):
+      case Code(content):
         yield f'print("```python")'
         yield f'print("{printable(content)}")'
         yield f'print("```\\n")'
-        if not produces_html:
-          yield f'print("```")'
-        yield content
-        if not produces_html:
-          yield f'print("```\\n")'
+        yield 'with htmlprint.use_html_print():'
+        yield textwrap.indent(content, '  ')
 
 def convert_to(input_file: Path, output_file: Path):
   tokens = tokenize(get_lines(input_file))

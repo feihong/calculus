@@ -1,6 +1,6 @@
+import sys
 import subprocess
 from pathlib import Path
-import shutil
 
 import markdown
 
@@ -9,7 +9,6 @@ import pymd
 build_dir = Path(__file__).parent / '_build'
 if not build_dir.exists():
   build_dir.mkdir()
-  shutil.copy('htmlviz.py', build_dir)
 
 def generate_python_file(input_file: Path):
   python_file = build_dir / input_file.with_suffix('.py')
@@ -45,7 +44,8 @@ HTML_BOILERPLATE = """\
 def generate_html_file(python_file: Path):
   html_file = python_file.with_suffix('.html')
 
-  result = subprocess.run(['python', python_file], capture_output=True)
+  env = {'PYTHONPATH': Path(__file__).parent}
+  result = subprocess.run([sys.executable, python_file], env=env, capture_output=True)
   if result.returncode == 0:
     # replace empty output blocks with whitespace
     input = result.stdout.decode('utf8').replace('\n```\n```\n', '\n')
