@@ -5,6 +5,7 @@ from pathlib import Path
 import markdown
 
 import pymd
+import mdcleaner
 
 build_dir = Path(__file__).parent / '_build'
 if not build_dir.exists():
@@ -47,8 +48,7 @@ def generate_html_file(python_file: Path):
   env = {'PYTHONPATH': Path(__file__).parent}
   result = subprocess.run([sys.executable, python_file], env=env, capture_output=True)
   if result.returncode == 0:
-    # replace empty output blocks with whitespace
-    input = result.stdout.decode('utf8').replace('\n```\n```\n', '\n')
+    input = mdcleaner.clean(result.stdout.decode('utf8'))
     body = markdown.markdown(input, extensions=['fenced_code'])
     output = (HTML_BOILERPLATE + body  + '\n</body>\n</head>\n</html>').encode('utf8')
   else:
@@ -57,9 +57,6 @@ def generate_html_file(python_file: Path):
 
   with html_file.open('wb') as fp:
     fp.write(output)
-
-# for token in tokenize(get_lines(Path('gradient-fields-forever.py'))):
-#   print(token)
 
 input_file = Path('01-functions.py')
 python_file = generate_python_file(input_file)

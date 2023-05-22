@@ -11,4 +11,4 @@ import matplotlib.pyplot as plt
 x = np.linspace(-2, 2, 30)
 y = 2*x**2 + 3*x**3 - x**4
 plt.plot(x, y)
-print(plt, format='png')
+plt.show(format='png')

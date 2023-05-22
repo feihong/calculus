@@ -4,7 +4,6 @@ Given a normal Python script, generate another Python script that outputs markdo
 import re
 from dataclasses import dataclass
 from pathlib import Path
-import textwrap
 
 def get_lines(input_file: Path):
   with input_file.open() as fp:
@@ -70,7 +69,6 @@ def tokenize_code_or_header(line, lines):
 
 PYTHON_BOILERPLATE = """\
 import htmlprint
-htmlprint.init(__file__)
 
 """
 
@@ -91,8 +89,14 @@ def get_code_chunks(tokens):
         yield f'print("```python")'
         yield f'print("{printable(content)}")'
         yield f'print("```\\n")'
-        yield 'with htmlprint.use_html_print():'
-        yield textwrap.indent(content, '  ')
+        yield f'print("```")'
+        yield replace_plt_show(content)
+        yield f'print("```\\n")'
+
+def replace_plt_show(content: str):
+  return content.replace(
+    'import matplotlib.pyplot as plt',
+    'import matplotlib.pyplot as plt\nplt.show = htmlprint.PlotHtmlPrinter(plt, __file__)')
 
 def convert_to(input_file: Path, output_file: Path):
   tokens = tokenize(get_lines(input_file))
