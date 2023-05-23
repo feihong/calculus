@@ -74,7 +74,7 @@ import htmlprint
 
 def get_code_chunks(tokens):
   def printable(s):
-    return s.replace('\\', '\\\\').replace('\n', '\\n')
+    return s.replace('\\', '\\\\').replace('\n', '\\n').replace('"', '\\"')
 
   yield PYTHON_BOILERPLATE
   first_header = True
