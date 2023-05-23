@@ -7,7 +7,7 @@ Clean markdown content:
 from typing import Iterable
 
 def clean(md: str):
-  lines = iter(line.strip() for line in md.splitlines())
+  lines = iter(line.rstrip() for line in md.splitlines())
   chunks = get_transformed_lines(lines)
   return '\n'.join(chunks)
 

@@ -16,19 +16,6 @@ def generate_python_file(input_file: Path):
   pymd.convert_to(input_file, python_file)
   return python_file
 
-def generate_markdown_file(python_file: Path):
-  markdown_file = python_file.with_suffix('.md')
-
-  result = subprocess.run(['python', python_file], capture_output=True)
-  if result.returncode == 0:
-    # replace empty output blocks with whitespace
-    output = result.stdout.replace(b'\n```\n```\n', b'\n')
-  else:
-    print(result.stderr.decode('utf8'))
-    output = b'```\n' + result.stderr + b'\n```'
-
-  with markdown_file.open('wb') as fp:
-    fp.write(output)
 
 HTML_BOILERPLATE = """\
 <!DOCTYPE html>
@@ -42,7 +29,8 @@ HTML_BOILERPLATE = """\
 <body>
 """
 
-def generate_html_file(python_file: Path):
+def generate_html_file(input_file: Path):
+  python_file = generate_python_file(input_file)
   html_file = python_file.with_suffix('.html')
 
   env = {'PYTHONPATH': Path(__file__).parent}
@@ -59,6 +47,4 @@ def generate_html_file(python_file: Path):
     fp.write(output)
 
 input_file = Path('01-functions.py')
-python_file = generate_python_file(input_file)
-# generate_markdown_file(python_file)
-generate_html_file(python_file)
+generate_html_file(input_file)
