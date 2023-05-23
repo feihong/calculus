@@ -8,7 +8,7 @@ from pathlib import Path
 def get_lines(input_file: Path):
   with input_file.open() as fp:
     for line in fp:
-      yield line.strip()
+      yield line.rstrip()
 
 @dataclass
 class Header:
@@ -77,11 +77,13 @@ def get_code_chunks(tokens):
     return s.replace('\n', '\\n')
 
   yield PYTHON_BOILERPLATE
+  first_header = True
 
   for token in tokens:
     match token:
       case Header(level, content):
-        prefix = '#' * level
+        prefix = '#' * (1 if first_header else level + 1)
+        first_header = False
         yield f'print("{prefix} {content}\\n")'
       case Markdown(content):
         yield f'print("{printable(content)}\\n")'
