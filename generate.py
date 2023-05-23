@@ -13,9 +13,10 @@ if not build_dir.exists():
 
 def generate_python_file(input_file: Path):
   python_file = build_dir / input_file.with_suffix('.py')
+  if not python_file.parent.exists():
+    python_file.parent.mkdir(parents=True)
   pymd.convert_to(input_file, python_file)
   return python_file
-
 
 HTML_BOILERPLATE = """\
 <!DOCTYPE html>
@@ -46,5 +47,12 @@ def generate_html_file(input_file: Path):
   with html_file.open('wb') as fp:
     fp.write(output)
 
-input_file = Path('01-functions.py')
-generate_html_file(input_file)
+  return html_file
+
+if __name__ == '__main__':
+  input_file = Path(sys.argv[1])
+  print(f'Processing {input_file}')
+  if input_file.suffix != '.py':
+    sys.exit(1)
+  html_file = generate_html_file(input_file)
+  print(f'Generated {html_file}')

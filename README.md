@@ -2,8 +2,9 @@
 
 ## Installation
 
-Install Python
+Make sure Python is installed, then run
 
+    brew install fswatch
     pip install --requirement requirements.txt
 
 ## Links
