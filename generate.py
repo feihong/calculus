@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import os
 from pathlib import Path
 
 import markdown
@@ -7,12 +8,10 @@ import markdown
 import pymd
 import mdcleaner
 
-build_dir = Path(__file__).parent / '_build'
-if not build_dir.exists():
-  build_dir.mkdir()
+build_dir = Path.cwd() / '_build'
 
 def generate_python_file(input_file: Path):
-  python_file = build_dir / input_file.with_suffix('.py')
+  python_file = build_dir / input_file.relative_to(Path.cwd())
   if not python_file.parent.exists():
     python_file.parent.mkdir(parents=True)
   pymd.convert_to(input_file, python_file)
@@ -50,7 +49,7 @@ def generate_html_file(input_file: Path):
   return html_file
 
 if __name__ == '__main__':
-  input_file = Path(sys.argv[1])
+  input_file = Path(sys.argv[1]).absolute()
   print(f'Processing {input_file}')
   if input_file.suffix != '.py':
     sys.exit(1)
