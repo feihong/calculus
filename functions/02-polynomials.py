@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import sympy as sym
 
 Domain = namedtuple('Domain', ['start', 'end'])
+printexpr = lambda expr: print(f'<html>\n${sym.latex(expr)}$\n</html>')
 
 # Exercise 1: random polynomials in numpy
 
@@ -46,20 +47,47 @@ sym.plot(sy, (sx, -3, 3), ylim=(-10,10), title=f'$y={sym.printing.latex(sy)}$')
 
 # Exercise 3: estimate a sine wave with polynomials
 
-domain = Domain(-6, 6)
+x2 = np.linspace(-2*np.pi, 2*np.pi, 31)
+plt.plot(x2[::2], np.sin(x2[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
 
-x2 = np.linspace(domain.start, domain.end, 31)
 steps = 10
-compute_term = lambda x, n: ((-1)**(n+1)) * ((x**(2*n - 1)) / math.factorial(2*n - 1))
-compute_sum = lambda x: sum(compute_term(x, n) for n in range(1, steps+1))
-sine_est = [compute_sum(x) for x in x2]
-plt.plot(x2, sine_est, label='sum over 10 terms')
+sine_estimate = np.zeros(len(x2))
 
-sine_x = np.linspace(domain.start, domain.end, 11)
-sine = np.sin(sine_x)
-plt.plot(sine_x, sine, label='sin(x)', marker='o', markerfacecolor='white', markeredgecolor='black', linestyle='')
+for n in range(1, steps + 1):
+  temp_y = ((-1)**(n+1)) * ((x2**(2*n - 1)) / math.factorial(2*n - 1))
+  sine_estimate += temp_y
+  plt.plot(x2, temp_y, linestyle='--')
+
+plt.plot(x2, sine_estimate, 'k', label=f'sum over {steps} terms', linewidth=2)
 
 plt.legend()
-plt.xlim(domain.start, domain.end)
+plt.xlim(x2[[0, -1]])
 plt.ylim(-5, 5)
 plt.show()
+
+# Exercise 3: estimate a sine wave with polynomials using sympy
+
+plt.plot(x2[::2], np.sin(x2[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
+
+sn = sym.symbols('n')
+maclaurin_series = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, 10))
+printexpr(maclaurin_series)
+
+fx = sym.lambdify(sx, maclaurin_series)
+plt.plot(x2, fx(x2), 'k', label='sum over 10 terms', linewidth=2)
+
+for ((exponent,), coeff) in sym.poly(maclaurin_series).all_terms():
+  if coeff != 0:
+    term = coeff*sx**exponent
+    gx = sym.lambdify(sx, term)
+    plt.plot(x2, gx(x2), linestyle='--')
+
+plt.legend()
+plt.xlim(x2[[0, -1]])
+plt.ylim(-5, 5)
+plt.show()
+
+# Is Maclaurin series summed to infinity really the same as sin(x)?
+
+maclaurin_series2 = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, sym.oo))
+printexpr(maclaurin_series2)
