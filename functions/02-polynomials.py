@@ -47,7 +47,13 @@ sym.plot(sy, (sx, -3, 3), ylim=(-10,10), title=f'$y={sym.printing.latex(sy)}$')
 
 # Exercise 3: estimate a sine wave with polynomials
 
-print("<html><div>We'll use the Maclaurin series `sum_(n=1)^oo (-1)^(n+1) (x^(2n-1))/((2n-1)!)` to generate a polynomial to estimate sine</div></html>")
+"""
+We'll use the Maclaurin series
+
+◊sum_(n=1)^oo (-1)^(n+1) (x^(2n-1))/((2n-1)!)◊
+
+to generate a polynomial to estimate sine
+"""
 
 x2 = np.linspace(-2*np.pi, 2*np.pi, 31)
 plt.plot(x2[::2], np.sin(x2[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
@@ -91,7 +97,11 @@ plt.xlim(x3[[0, -1]])
 plt.ylim(-5, 5)
 plt.show()
 
-# Is Maclaurin series summed to infinity really the same as sin(x)?
+# Is Maclaurin series really equivalent to sine?
 
 maclaurin_series2 = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, sym.oo))
 printexpr(maclaurin_series2)
+
+"""
+Sympy says yes
+"""

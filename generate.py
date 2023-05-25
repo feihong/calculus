@@ -33,6 +33,9 @@ HTML_BOILERPLATE = """\
     tex: {
       inlineMath: [['$', '$']]
     },
+    asciimath: {
+      delimiters: [['◊', '◊']]
+    },
     svg: {
       fontCache: 'global'
     }
