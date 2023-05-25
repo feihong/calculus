@@ -47,6 +47,8 @@ sym.plot(sy, (sx, -3, 3), ylim=(-10,10), title=f'$y={sym.printing.latex(sy)}$')
 
 # Exercise 3: estimate a sine wave with polynomials
 
+print("<html><div>We'll use the Maclaurin series `sum_(n=1)^oo (-1)^(n+1) (x^(2n-1))/((2n-1)!)` to generate a polynomial to estimate sine</div></html>")
+
 x2 = np.linspace(-2*np.pi, 2*np.pi, 31)
 plt.plot(x2[::2], np.sin(x2[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
 
@@ -67,23 +69,25 @@ plt.show()
 
 # Exercise 3: estimate a sine wave with polynomials using sympy
 
-plt.plot(x2[::2], np.sin(x2[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
+# Zoom out a little to see how the estimate degrades the further you get from origin
+x3 = np.linspace(-10, 10, 41)
+plt.plot(x3[::2], np.sin(x3[::2]), 'ok', label='sin(x)', markerfacecolor='w', linestyle='')
 
 sn = sym.symbols('n')
 maclaurin_series = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, 10))
 printexpr(maclaurin_series)
 
 fx = sym.lambdify(sx, maclaurin_series)
-plt.plot(x2, fx(x2), 'k', label='sum over 10 terms', linewidth=2)
+plt.plot(x3, fx(x3), 'k', label='sum over 10 terms', linewidth=2)
 
 for ((exponent,), coeff) in sym.poly(maclaurin_series).all_terms():
   if coeff != 0:
     term = coeff*sx**exponent
     gx = sym.lambdify(sx, term)
-    plt.plot(x2, gx(x2), linestyle='--')
+    plt.plot(x3, gx(x3), linestyle='--')
 
 plt.legend()
-plt.xlim(x2[[0, -1]])
+plt.xlim(x3[[0, -1]])
 plt.ylim(-5, 5)
 plt.show()
 

@@ -27,6 +27,9 @@ HTML_BOILERPLATE = """\
   <title>Python Note</title>
   <script>
   MathJax = {
+    loader: {
+      load: ['input/asciimath', 'output/chtml', 'ui/menu']
+    },
     tex: {
       inlineMath: [['$', '$']]
     },
