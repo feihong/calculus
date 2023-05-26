@@ -25,6 +25,18 @@ HTML_BOILERPLATE = """\
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Python Note</title>
+  <style>
+  table {
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #bbb;
+    padding: 0.5em;
+  }
+  td {
+    text-align: right;
+  }
+  </style>
   <script>
   MathJax = {
     loader: {
@@ -56,7 +68,7 @@ def generate_html_file(input_file: Path):
   result = subprocess.run([sys.executable, python_file], env=env, capture_output=True)
   if result.returncode == 0:
     input = mdcleaner.clean(result.stdout.decode('utf8'))
-    body = markdown.markdown(input, extensions=['fenced_code'])
+    body = markdown.markdown(input, extensions=['fenced_code', 'tables'])
     output = (HTML_BOILERPLATE + body  + '\n</body>\n</head>\n</html>').encode('utf8')
   else:
     print(result.stderr.decode('utf8'))

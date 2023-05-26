@@ -4,12 +4,10 @@
 
 import random
 import math
-from collections import namedtuple
 import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sym
 
-Domain = namedtuple('Domain', ['start', 'end'])
 printexpr = lambda expr: print(f'<html>\n${sym.latex(expr)}$\n</html>')
 
 # Exercise 1: random polynomials in numpy
