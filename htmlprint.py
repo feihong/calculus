@@ -1,5 +1,25 @@
 from types import ModuleType
 from pathlib import Path
+import sympy
+
+def expr(*args):
+  args = (a if isinstance(a, str) else f'${sympy.latex(a)}$' for a in args)
+  print('<html>')
+  print(*args)
+  print('</html>')
+
+def table(data):
+  data_iter = iter(data)
+  header = next(data_iter)
+  print('<html>')
+  print(' | '.join(header))
+  print(' | '.join('---' for h in header))
+  for row in data_iter:
+    if isinstance(row, str):
+      print(row)
+    else:
+      print(' | '.join(str(v) for v in row))
+  print('</html>')
 
 class PlotHtmlPrinter:
   def __init__(self, plt_module: ModuleType, input_file: str):

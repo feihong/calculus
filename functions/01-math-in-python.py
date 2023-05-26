@@ -27,7 +27,7 @@ plt.show()
 s_beta = sym.symbols('beta')
 s_y = s_beta**2 + 3*s_beta**3 - s_beta**4
 
-sym.plotting.plot(s_y, (s_beta, start, end),
+sym.plot(s_y, (s_beta, start, end),
                   xlabel='x', ylabel=None, title=f'$f(\\beta) = {sym.printing.latex(s_y)}$')
 
 

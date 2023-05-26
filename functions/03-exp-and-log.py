@@ -5,19 +5,7 @@
 import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
-
-def printtable(data):
-  data_iter = iter(data)
-  header = next(data_iter)
-  print('<html>')
-  print(' | '.join(header))
-  print(' | '.join('---' for h in header))
-  for row in data_iter:
-    if isinstance(row, str):
-      print(row)
-    else:
-      print(' | '.join(str(v) for v in row))
-  print('</html>')
+import htmlprint
 
 # Is ◊e = lim_(n->oo) (1+1/n)^n◊ really equivalent to ◊e◊?
 
@@ -36,7 +24,7 @@ def gen_data():
   for n, estimate, diff in zip(ns, estimates, diffs):
     yield f'{n} | {estimate:.5f} | {diff:.5f}'
 
-printtable(gen_data())
+htmlprint.table(gen_data())
 
 # Exercise 2: visualize e's approach
 

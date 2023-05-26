@@ -1,14 +1,13 @@
 # Section 3: Functions: Polynomials
 
-# Imports
+# Imports and helper functions
 
 import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sym
-
-printexpr = lambda expr: print(f'<html>\n${sym.latex(expr)}$\n</html>')
+import htmlprint
 
 # Exercise 1: random polynomials in numpy
 
@@ -79,7 +78,7 @@ plt.plot(x3[::2], np.sin(x3[::2]), 'ok', label='sin(x)', markerfacecolor='w', li
 
 sn = sym.symbols('n')
 maclaurin_series = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, 10))
-printexpr(maclaurin_series)
+htmlprint.expr(maclaurin_series)
 
 fx = sym.lambdify(sx, maclaurin_series)
 plt.plot(x3, fx(x3), 'k', label='sum over 10 terms', linewidth=2)
@@ -98,7 +97,7 @@ plt.show()
 # Is Maclaurin series really equivalent to sine?
 
 maclaurin_series2 = sym.summation(((-1)**(sn+1)) * (sx**(2*sn - 1)) / sym.factorial(2*sn - 1), (sn, 1, sym.oo))
-printexpr(maclaurin_series2)
+htmlprint.expr(maclaurin_series2)
 
 """
 Sympy says yes
