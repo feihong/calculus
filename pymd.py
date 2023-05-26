@@ -67,16 +67,10 @@ def tokenize_code_or_header(line, lines):
     content = '\n'.join(accumulator)
     return Code(content)
 
-PYTHON_BOILERPLATE = """\
-import htmlprint
-
-"""
-
 def get_code_chunks(tokens):
   def printable(s):
     return s.replace('\\', '\\\\').replace('\n', '\\n').replace('"', '\\"')
 
-  yield PYTHON_BOILERPLATE
   first_header = True
 
   for token in tokens:
@@ -98,7 +92,7 @@ def get_code_chunks(tokens):
 def replace_plt_show(content: str):
   return content.replace(
     'import matplotlib.pyplot as plt',
-    'import matplotlib.pyplot as plt\nplt.show = htmlprint.PlotHtmlPrinter(plt, __file__)')
+    'import matplotlib.pyplot as plt\nimport htmlprint\nplt.show = htmlprint.PlotHtmlPrinter(plt, __file__)')
 
 def convert_to(input_file: Path, output_file: Path):
   tokens = tokenize(get_lines(input_file))
