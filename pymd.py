@@ -2,8 +2,10 @@
 Given a normal Python script, generate another Python script that outputs markdown
 """
 import re
+import io
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List
 
 def get_lines(input_file: Path):
   with input_file.open() as fp:
@@ -30,42 +32,60 @@ class Markdown:
 
 @dataclass
 class Code:
-  content: str
+  lines: List[str]
 
-def tokenize(lines):
-  for line in lines:
-    if line == '':
-      continue
-    elif line.startswith('"""'):
-      yield tokenize_markdown(lines)
+  def add(self, lines):
+    self.lines.append('')
+    self.lines.extend(lines)
+
+class Tokenizer:
+  last_block = None
+
+  @staticmethod
+  def tokenize(lines):
+    for line in lines:
+      if line == '':
+        continue
+      elif line.startswith('"""'):
+        yield Tokenizer.markdown(lines)
+      else:
+        result = Tokenizer.code_or_header(line, lines)
+        if result is not None:
+          yield result
+
+  @staticmethod
+  def markdown(lines):
+    sio = io.StringIO()
+
+    for line in lines:
+      if line.startswith('"""'):
+        Tokenizer.last_block = Markdown(sio.getvalue())
+        return Tokenizer.last_block
+      else:
+        sio.write(line + '\n')
+
+    raise Exception('Expected """')
+
+  @staticmethod
+  def code_or_header(line, lines):
+    accumulator = [line]
+
+    for line in lines:
+      if line == '':
+        break
+      else:
+        accumulator.append(line)
+
+    if len(accumulator) == 1 and accumulator[0].startswith('#'):
+      Tokenizer.last_block = Header.from_line(accumulator[0])
+      return Tokenizer.last_block
     else:
-      yield tokenize_code_or_header(line, lines)
-
-def tokenize_markdown(lines):
-  accumulator = []
-
-  for line in lines:
-    if line.startswith('"""'):
-      return Markdown('\n'.join(accumulator))
-    else:
-      accumulator.append(line)
-
-  raise Exception('Expected """')
-
-def tokenize_code_or_header(line, lines):
-  accumulator = [line]
-
-  for line in lines:
-    if line == '':
-      break
-    else:
-      accumulator.append(line)
-
-  if len(accumulator) == 1 and accumulator[0].startswith('#'):
-    return Header.from_line(accumulator[0])
-  else:
-    content = '\n'.join(accumulator)
-    return Code(content)
+      if isinstance(Tokenizer.last_block, Code):
+        Tokenizer.last_block.add(accumulator)
+        return None
+      else:
+        Tokenizer.last_block = Code(accumulator)
+        return Tokenizer.last_block
 
 def get_code_chunks(tokens):
   def printable(s):
@@ -81,7 +101,9 @@ def get_code_chunks(tokens):
         yield f'print("{prefix} {content}\\n")'
       case Markdown(content):
         yield f'print("{printable(content)}\\n")'
-      case Code(content):
+      case Code(lines):
+        content = '\n'.join(lines)
+
         yield f'print("```python")'
         yield f'print("{printable(content)}")'
         yield f'print("```\\n")'
@@ -95,8 +117,8 @@ def replace_plt_show(content: str):
     'import matplotlib.pyplot as plt\nimport htmlprint\nplt.show = htmlprint.PlotHtmlPrinter(plt, __file__)')
 
 def convert_to(input_file: Path, output_file: Path):
-  tokens = tokenize(get_lines(input_file))
+  tokens = Tokenizer.tokenize(get_lines(input_file))
 
   with output_file.open('w', encoding='utf8') as fp:
-    for chunk in get_code_chunks(tokens):
+    for chunk in get_code_chunks(list(tokens)):
       fp.write(chunk + '\n')

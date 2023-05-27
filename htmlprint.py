@@ -6,7 +6,7 @@ def expr(*args):
   args = (a if isinstance(a, str) else f'${sympy.latex(a)}$' for a in args)
   print('<html>')
   print(*args)
-  print('</html>')
+  print('</html>\n')
 
 def table(data):
   data_iter = iter(data)
@@ -19,7 +19,7 @@ def table(data):
       print(row)
     else:
       print(' | '.join(str(v) for v in row))
-  print('</html>')
+  print('</html>\n')
 
 class PlotHtmlPrinter:
   def __init__(self, plt_module: ModuleType, input_file: str):
