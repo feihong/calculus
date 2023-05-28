@@ -28,6 +28,7 @@ class Header:
 
 @dataclass
 class Markdown:
+  is_fstring: bool
   content: str
 
 @dataclass
@@ -46,9 +47,9 @@ class Tokenizer:
     for line in lines:
       if line == '':
         continue
-      elif line.startswith('"""'):
+      elif match := re.match(r'^(f?)"""', line):
         if isinstance(Tokenizer.last_token, Code): yield Tokenizer.last_token
-        Tokenizer.last_token = Tokenizer.markdown(lines)
+        Tokenizer.last_token = Tokenizer.markdown(match.group(1) == 'f', lines)
         yield Tokenizer.last_token
       else:
         token = Tokenizer.code_or_header(line, lines)
@@ -63,12 +64,12 @@ class Tokenizer:
     if isinstance(Tokenizer.last_token, Code): yield Tokenizer.last_token
 
   @staticmethod
-  def markdown(lines):
+  def markdown(is_fstring: bool, lines: List[str]):
     sio = io.StringIO()
 
     for line in lines:
       if line.startswith('"""'):
-        return Markdown(sio.getvalue())
+        return Markdown(is_fstring, sio.getvalue())
       else:
         sio.write(line + '\n')
 
@@ -94,10 +95,10 @@ class Tokenizer:
         case _:
           return Code(accumulator)
 
-def get_code_chunks(tokens):
-  def printable(s):
+def printable(s):
     return s.replace('\\', '\\\\').replace('\n', '\\n').replace('"', '\\"')
 
+def get_code_chunks(tokens):
   first_header = True
 
   for token in tokens:
@@ -106,8 +107,9 @@ def get_code_chunks(tokens):
         prefix = '#' * (1 if first_header else level + 1)
         first_header = False
         yield f'print("{prefix} {content}\\n")'
-      case Markdown(content):
-        yield f'print("{printable(content)}\\n")'
+      case Markdown(is_fstring, content):
+        prefix = 'f' if is_fstring else ''
+        yield f'print({prefix}"{printable(content)}\\n")'
       case Code(lines):
         content = '\n'.join(lines)
 
