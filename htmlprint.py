@@ -3,7 +3,7 @@ from pathlib import Path
 import sympy
 
 def expr(*args):
-  args = (a if isinstance(a, str) else f'${sympy.latex(a)}$' for a in args)
+  args = (f'${sympy.latex(a)}$' if isinstance(a, sympy.Expr) else a for a in args)
   print('<html>')
   print(*args)
   print('</html>\n')
