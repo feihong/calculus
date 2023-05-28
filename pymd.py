@@ -39,7 +39,7 @@ class Code:
     self.lines.extend(lines)
 
 class Tokenizer:
-  last_block = None
+  last_token = None
 
   @staticmethod
   def tokenize(lines):
@@ -47,11 +47,20 @@ class Tokenizer:
       if line == '':
         continue
       elif line.startswith('"""'):
-        yield Tokenizer.markdown(lines)
+        if isinstance(Tokenizer.last_token, Code): yield Tokenizer.last_token
+        Tokenizer.last_token = Tokenizer.markdown(lines)
+        yield Tokenizer.last_token
       else:
-        result = Tokenizer.code_or_header(line, lines)
-        if result is not None:
-          yield result
+        token = Tokenizer.code_or_header(line, lines)
+        match token:
+          case Header(_) as header:
+            if isinstance(Tokenizer.last_token, Code): yield Tokenizer.last_token
+            Tokenizer.last_token = token
+            yield token
+          case Code(_) as code:
+            Tokenizer.last_token = code
+
+    if isinstance(Tokenizer.last_token, Code): yield Tokenizer.last_token
 
   @staticmethod
   def markdown(lines):
@@ -59,8 +68,7 @@ class Tokenizer:
 
     for line in lines:
       if line.startswith('"""'):
-        Tokenizer.last_block = Markdown(sio.getvalue())
-        return Tokenizer.last_block
+        return Markdown(sio.getvalue())
       else:
         sio.write(line + '\n')
 
@@ -77,15 +85,14 @@ class Tokenizer:
         accumulator.append(line)
 
     if len(accumulator) == 1 and accumulator[0].startswith('#'):
-      Tokenizer.last_block = Header.from_line(accumulator[0])
-      return Tokenizer.last_block
+      return Header.from_line(accumulator[0])
     else:
-      if isinstance(Tokenizer.last_block, Code):
-        Tokenizer.last_block.add(accumulator)
-        return None
-      else:
-        Tokenizer.last_block = Code(accumulator)
-        return Tokenizer.last_block
+      match Tokenizer.last_token:
+        case Code(_) as code:
+          code.add(accumulator)
+          return None
+        case _:
+          return Code(accumulator)
 
 def get_code_chunks(tokens):
   def printable(s):
@@ -120,5 +127,5 @@ def convert_to(input_file: Path, output_file: Path):
   tokens = Tokenizer.tokenize(get_lines(input_file))
 
   with output_file.open('w', encoding='utf8') as fp:
-    for chunk in get_code_chunks(list(tokens)):
+    for chunk in get_code_chunks(tokens):
       fp.write(chunk + '\n')
