@@ -5,7 +5,7 @@
 import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
-import htmlprint
+import mdprint
 
 # Is ◊e = lim_(n->oo) (1+1/n)^n◊ really equivalent to ◊e◊?
 
@@ -24,7 +24,7 @@ def gen_data():
   for n, estimate, diff in zip(ns, estimates, diffs):
     yield f'{n} | {estimate:.5f} | {diff:.5f}'
 
-htmlprint.table(gen_data())
+mdprint.table(gen_data())
 
 # Exercise 2: visualize e's approach
 

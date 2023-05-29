@@ -15,7 +15,7 @@ def clean(md: str) -> str:
 def get_transformed_lines(lines: Iterable[str]) -> Generator[str, Any, None]:
   inside_code_block = False
   inside_output_block = False
-  inside_html_block = False
+  inside_markdown_block = False
 
   for line in lines:
     if line == '```python':
@@ -26,13 +26,13 @@ def get_transformed_lines(lines: Iterable[str]) -> Generator[str, Any, None]:
       yield line
     elif line == '```':
       inside_output_block = not inside_output_block
-    elif inside_output_block and line == '<html>':
-      inside_html_block = True
-    elif inside_output_block and line == '</html>':
-      inside_html_block = False
-    elif match := re.match(r'^\<html\>(.*)\</html\>$', line):
+    elif inside_output_block and line == '<markdown>':
+      inside_markdown_block = True
+    elif inside_output_block and line == '</markdown>':
+      inside_markdown_block = False
+    elif match := re.match(r'^\<markdown\>(.*)\</markdown\>$', line):
       yield match.group(1)
-    elif inside_output_block and not inside_html_block:
+    elif inside_output_block and not inside_markdown_block:
       yield '    ' + line
     else:
       yield line

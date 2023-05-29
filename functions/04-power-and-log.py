@@ -8,13 +8,13 @@ import numpy as np
 import sympy as sym
 from sympy.abc import x, a, b
 import matplotlib.pyplot as plt
-import htmlprint
+import mdprint
 
 def rand():
   return random.randint(0, 100) / 10.
 
 def compare_expressions(e1, e2, a, b, data):
-  htmlprint.expr(e1, 'is equivalent to', e2)
+  mdprint.expr(e1, 'is equivalent to', e2)
 
   def generate_data():
     yield 'a', 'b', f'${sym.latex(e1)}$', f'${sym.latex(e2)}$'
@@ -26,7 +26,7 @@ def compare_expressions(e1, e2, a, b, data):
       sub2 = e2.subs({a: a_val, b: b_val})
       yield f'{a_val} | {b_val} | ${sym.latex(sub1)}$ | ${sym.latex(sub2)}$'
 
-  htmlprint.table(generate_data())
+  mdprint.table(generate_data())
 
 def compare_using_numpy(a, b, fa, fb, fa_label, fb_label):
   def generate_data():
@@ -35,8 +35,8 @@ def compare_using_numpy(a, b, fa, fb, fa_label, fb_label):
     for a_, b_, fa_, fb_ in zip(a[:6], b[:6], fa[:6], fb[:6]):
       yield f'{a_} | {b_} | {fa_:.3f} | {fb_:.3f} | {abs(fa_ - fb_):.5f}'
 
-  htmlprint.markdown(f'◊{fa_label} = {fb_label}◊')
-  htmlprint.table(generate_data())
+  mdprint.markdown(f'◊{fa_label} = {fb_label}◊')
+  mdprint.table(generate_data())
   plt.plot(fa - fb, '.')
   plt.ylim(-1, 1)
   plt.show()

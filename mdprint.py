@@ -4,19 +4,19 @@ import sympy
 
 def expr(*args):
   args = (f'${sympy.latex(a)}$' if isinstance(a, sympy.Expr) else a for a in args)
-  print('<html>')
+  print('<markdown>')
   print(*args)
-  print('</html>\n')
+  print('</markdown>\n')
 
 def markdown(s: str):
-  print('<html>')
+  print('<markdown>')
   print(s)
-  print('</html>\n')
+  print('</markdown>\n')
 
 def table(data):
   data_iter = iter(data)
   header = next(data_iter)
-  print('<html>')
+  print('<markdown>')
   print(' | '.join(header))
   print(' | '.join('---' for h in header))
   for row in data_iter:
@@ -24,9 +24,9 @@ def table(data):
       print(row)
     else:
       print(' | '.join(str(v) for v in row))
-  print('</html>\n')
+  print('</markdown>\n')
 
-class PlotHtmlPrinter:
+class PlotPrinter:
   def __init__(self, plt_module: ModuleType, input_file: str):
     self.input_file = Path(input_file)
     self.plt = plt_module
@@ -39,6 +39,6 @@ class PlotHtmlPrinter:
     self.counter += 1
     self.plt.savefig(img_file)
     self.plt.close()
-    print('<html>')
+    print('<markdown>')
     print(f'<img src="{img_file.name}">')
-    print('</html>\n')
+    print('</markdown>\n')

@@ -123,7 +123,7 @@ def get_code_chunks(tokens):
 def replace_plt_show(content: str):
   return content.replace(
     'import matplotlib.pyplot as plt',
-    'import matplotlib.pyplot as plt\nimport htmlprint\nplt.show = htmlprint.PlotHtmlPrinter(plt, __file__)')
+    'import matplotlib.pyplot as plt\nimport mdprint\nplt.show = mdprint.PlotPrinter(plt, __file__)')
 
 def convert_to(input_file: Path, output_file: Path):
   tokens = Tokenizer.tokenize(get_lines(input_file))
