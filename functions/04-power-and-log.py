@@ -32,11 +32,14 @@ def compare_using_numpy(a, b, fa, fb, fa_label, fb_label):
   def generate_data():
     yield 'a', 'b', f'◊{fa_label}◊', f'◊{fb_label}◊', 'diff'
 
-    for a_, b_, fa_, fb_ in zip(a, b, fa, fb):
+    for a_, b_, fa_, fb_ in zip(a[:6], b[:6], fa[:6], fb[:6]):
       yield f'{a_} | {b_} | {fa_:.3f} | {fb_:.3f} | {abs(fa_ - fb_):.5f}'
 
   htmlprint.markdown(f'◊{fa_label} = {fb_label}◊')
   htmlprint.table(generate_data())
+  plt.plot(fa - fb, '.')
+  plt.ylim(-1, 1)
+  plt.show()
 
 # What is ◊0^0◊?
 
@@ -80,8 +83,8 @@ For ◊x = -2, a = 4.1, b = -0.3◊:
 # Exercise 4: The power of log
 
 def ex4():
-  a = np.random.randint(1, 20, size=6)
-  b = np.random.randint(1, 20, size=6)
+  a = np.random.randint(1, 20, size=100)
+  b = np.random.randint(1, 20, size=100)
 
   compare_using_numpy(a, b, np.log(a * b), np.log(a) + np.log(b), 'ln(a xx b)', 'ln(a) + ln(b)')
   compare_using_numpy(a, b, np.log(a**b), b*np.log(a), 'ln(a^b)', 'b ln(a)')

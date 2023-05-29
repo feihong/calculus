@@ -41,4 +41,4 @@ class PlotHtmlPrinter:
     self.plt.close()
     print('<html>')
     print(f'<img src="{img_file.name}">')
-    print('</html>')
+    print('</html>\n')
