@@ -8,6 +8,11 @@ def expr(*args):
   print(*args)
   print('</html>\n')
 
+def markdown(s: str):
+  print('<html>')
+  print(s)
+  print('</html>\n')
+
 def table(data):
   data_iter = iter(data)
   header = next(data_iter)
