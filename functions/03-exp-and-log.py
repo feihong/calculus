@@ -16,15 +16,13 @@ print(sym.N(sym.E))
 
 # Exercise 1: estimate e
 
-def gen_data():
-  yield 'n', 'ẽ', 'e-ẽ'
-  ns = np.array([1,2,5,10,20])
-  estimates = (1 + 1/ns)**ns
+def ex1():
+  n = np.array([1,2,5,10,20])
+  estimates = (1 + 1/n)**n
   diffs = np.e - estimates
-  for n, estimate, diff in zip(ns, estimates, diffs):
-    yield f'{n} | {estimate:.5f} | {diff:.5f}'
+  mdprint.table2(['n', 'ẽ', 'e-ẽ'], n, estimates, diffs, format='{0} | {1:.5f} | {2:.5f}')
 
-mdprint.table(gen_data())
+ex1()
 
 # Exercise 2: visualize e's approach
 

@@ -26,6 +26,16 @@ def table(data):
       print(' | '.join(str(v) for v in row))
   print('</markdown>\n')
 
+def table2(headers, *columns, format=None):
+  assert len(headers) == len(columns)
+  format = ' | '.join('{%i}'%i for i in range(len(headers))) if format is None else format
+  print('<markdown>')
+  print(' | '.join(headers))
+  print(' | '.join('---' for h in headers))
+  for row in zip(*columns):
+    print(format.format(*row))
+  print('</markdown>\n')
+
 class PlotPrinter:
   def __init__(self, plt_module: ModuleType, input_file: str):
     self.input_file = Path(input_file)
@@ -40,5 +50,5 @@ class PlotPrinter:
     self.plt.savefig(img_file)
     self.plt.close()
     print('<markdown>')
-    print(f'<img src="{img_file.name}">')
+    print(f'![plot]({img_file.name})')
     print('</markdown>\n')
