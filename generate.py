@@ -70,6 +70,10 @@ def generate_html_file(input_file: Path):
     input = mdcleaner.clean(result.stdout.decode('utf8'))
     body = markdown.markdown(input, extensions=['fenced_code', 'tables'])
     output = (HTML_BOILERPLATE + body  + '\n</body>\n</head>\n</html>').encode('utf8')
+    error = result.stderr.decode('utf8')
+    if error != '':
+      print('Errors:')
+      print(error)
   else:
     print(result.stderr.decode('utf8'))
     output = b'```\n' + result.stderr + b'\n```'
