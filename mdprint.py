@@ -1,9 +1,10 @@
 from types import ModuleType
 from pathlib import Path
 import sympy
+from sympy.core.basic import Printable
 
 def expr(*args):
-  args = (f'${sympy.latex(a)}$' if isinstance(a, sympy.Expr) else a for a in args)
+  args = (f'${sympy.latex(a)}$' if isinstance(a, Printable) else a for a in args)
   print('<markdown>')
   # Surround with p tags, otherwise markdown will turn `\\` into `\`
   print('<p>', *args, '</p>')
