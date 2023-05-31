@@ -5,7 +5,8 @@ import sympy
 def expr(*args):
   args = (f'${sympy.latex(a)}$' if isinstance(a, sympy.Expr) else a for a in args)
   print('<markdown>')
-  print(*args)
+  # Surround with p tags, otherwise markdown will turn `\\` into `\`
+  print('<p>', *args, '</p>')
   print('</markdown>\n')
 
 def markdown(s: str):
