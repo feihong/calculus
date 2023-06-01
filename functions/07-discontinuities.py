@@ -52,7 +52,7 @@ def ex2():
   from sympy.abc import x
   e = sym.Piecewise((sym.sin(x*sym.pi), x<0), (1.5, sym.Eq(x, 0)), (-(x-2)**2, x>0))
   mdprint.expr('Piecewise function:', e)
-  print('Value at 0:', e.subs(x, 0))
+  mdprint.markdown(f'Value at 0: {e.subs(x, 0)}')
   sym.plot(e, (x, -1, 2))
 
 ex2()
@@ -77,15 +77,15 @@ def ex4_numpy():
   plt.show()
 
 ex4_numpy()
+#
 
 def ex4_sympy():
   from sympy.calculus.util import continuous_domain
   from sympy.calculus.singularities import singularities
   from sympy.abc import x
   e = sym.Piecewise((3/(1-x**2), sym.Ne(x, -1) & sym.Ne(x, 1)))
-  sym.plot(e, (x, -2, 2), ylim=(-20, 20))
-
   mdprint.expr('Singularities:', singularities(e, x))
   mdprint.expr('Continuous domain:', continuous_domain(e, x, sym.S.Reals))
+  sym.plot(e, (x, -2, 2), ylim=(-20, 20))
 
 ex4_sympy()

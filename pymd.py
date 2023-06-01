@@ -39,17 +39,14 @@ class Code:
   def __init__(self, lines):
     self.lines = lines
     self.finalized = False
-    self.check_finalized()
+    if self.lines[-1] == '#':
+      self.finalized = True
+      self.lines.pop()
 
   def add(self, code):
     self.lines.append('')
     self.lines.extend(code.lines)
-    self.check_finalized()
-
-  def check_finalized(self):
-    if self.lines[-1] == '#':
-      self.finalized = True
-      self.lines.pop()
+    self.finalized = code.finalized
 
 class Tokenizer:
   @staticmethod
@@ -59,10 +56,13 @@ class Tokenizer:
     for token in Tokenizer._tokenize(lines):
       match token:
         case Code(_) as code:
-          if last_code is not None:
-            last_code.add(code)
-          else:
+          if last_code is None:
             last_code = code
+          else:
+            last_code.add(code)
+            if last_code.finalized:
+              yield last_code
+              last_code = None
         case _:
           if last_code is not None:
             yield last_code
