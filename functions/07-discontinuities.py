@@ -83,9 +83,26 @@ def ex4_sympy():
   from sympy.calculus.util import continuous_domain
   from sympy.calculus.singularities import singularities
   from sympy.abc import x
-  e = sym.Piecewise((3/(1-x**2), sym.Ne(x, -1) & sym.Ne(x, 1)))
+  e = 3/(1-x**2)
   mdprint.expr('Singularities:', singularities(e, x))
   mdprint.expr('Continuous domain:', continuous_domain(e, x, sym.S.Reals))
   sym.plot(e, (x, -2, 2), ylim=(-20, 20))
 
 ex4_sympy()
+
+# Exercise 5: Oscillating discontinuity
+
+def ex5_numpy():
+  x = np.linspace(-1, 2, 41)
+  plt.plot(x, np.sin(1/(x-1)), '-o')
+  plt.show()
+
+ex5_numpy()
+#
+
+def ex5_sympy():
+  from sympy.abc import x
+  e = sym.sin(1/(x-1))
+  sym.plot(e, (x, -1, 2))
+
+ex5_sympy()
